@@ -29,7 +29,7 @@ describe("GET /api/topics", () => {
       .expect(200)
       .then((response) => {
         const { body } = response;
-        expect(body.topics.length).toEqual(3)
+        expect(body.topics.length).toEqual(3);
         body.topics.forEach((topic) => {
           expect(topic).toHaveProperty("slug");
           expect(topic).toHaveProperty("description");
@@ -47,9 +47,33 @@ describe("GET /api/topics", () => {
   });
 });
 
-// describe('GET /api/articles/article_id', () => {
-//   test('200: responds with article object of given id', () => {
-
-//   })
-// })
- //4. GET /api/articles/:article_id
+describe("GET /api/articles/:article_id", () => {
+  test("200: responds with article object of given id and formatted date (created_at)", () => {
+    const expectedOutput = {
+      article_id: 1,
+      title: "Living in the shadow of a great man",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "I find this existence challenging",
+      created_at: "2020-07-09T20:11:00.000Z",
+      votes: 100,
+    };
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        console.log(body.article);
+        expect(body.article).toHaveProperty("article_id", 1);
+        expect(body.article).toEqual(expectedOutput);
+      });
+  });
+  test("404: responds with error message if article_id doesn't exist", () => {
+    return request(app)
+      .get("/api/articles/50")
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "article doesn't exist" });
+      });
+  });
+});
