@@ -2,11 +2,9 @@ const { selectArticle } = require("../models/articles.model");
 
 exports.getArticle = (req, res, next) => {
   const { article_id } = req.params;
-  console.log(article_id, isNaN(article_id));
 
   if (isNaN(article_id)) {
     res.status(404).send({ msg: "article_id not valid" });
-
   } else {
     selectArticle(article_id).then((output) => {
       if (output === undefined) {

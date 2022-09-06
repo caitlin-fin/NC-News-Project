@@ -85,5 +85,3 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
-
-// check for invalid articles (eg. /api/articles/not_valid)
