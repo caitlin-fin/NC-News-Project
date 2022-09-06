@@ -29,6 +29,7 @@ describe("GET /api/topics", () => {
       .expect(200)
       .then((response) => {
         const { body } = response;
+        expect(body.topics.length).toEqual(3)
         body.topics.forEach((topic) => {
           expect(topic).toHaveProperty("slug");
           expect(topic).toHaveProperty("description");
@@ -45,3 +46,10 @@ describe("GET /api/topics", () => {
       });
   });
 });
+
+// describe('GET /api/articles/article_id', () => {
+//   test('200: responds with article object of given id', () => {
+
+//   })
+// })
+ //4. GET /api/articles/:article_id
