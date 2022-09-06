@@ -80,8 +80,8 @@ describe("GET /api/articles/:article_id", () => {
       .expect(404)
       .then((response) => {
         expect(response.body).toEqual({ msg: "article_id not valid" });
-   });
-});
+      });
+  });
 });
 
 describe("GET /api/users", () => {
@@ -108,3 +108,35 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("201: responds with object containing key with article data", () => {
+    const updateVotes = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updateVotes)
+      .expect(201)
+      .then((response) => {
+        const { article } = response.body;
+        expect(article !== undefined).toBe(true);
+        expect(article.hasOwnProperty("votes")).toBe(true);
+      });
+  });
+  test("201: responds with object and and updates vote count", () => {
+    const updateVotes = { inc_votes: -5 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updateVotes)
+      .expect(201)
+      .then((response) => {
+        const { article } = response.body;
+        expect(article.votes).toBe(95);
+      });
+  });
+});
+
+
+// errors ->
+// invalid vote count (eg. NaN)
+// empty req.body 
+// article doesn't exist
