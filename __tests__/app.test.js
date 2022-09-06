@@ -74,6 +74,13 @@ describe("GET /api/articles/:article_id", () => {
         expect(response.body).toEqual({ msg: "article doesn't exist" });
       });
   });
+   test("404: responds with error message if article_id is not valid", () => {
+    return request(app)
+      .get("/api/articles/not_valid")
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "article_id not valid" });
+   });
 });
 
 describe("GET /api/users", () => {
@@ -97,6 +104,6 @@ describe("GET /api/users", () => {
       .expect(404)
       .then((response) => {
         expect(response.body).toEqual({ msg: "path does not exist!" });
-      });
+     
   });
 });
