@@ -41,7 +41,6 @@ describe("GET /api/topics", () => {
       .get("/api/test")
       .expect(404)
       .then((response) => {
-        const { body } = response;
         expect(response.body).toEqual({ msg: "path does not exist!" });
       });
   });
@@ -63,7 +62,6 @@ describe("GET /api/articles/:article_id", () => {
       .expect(200)
       .then((response) => {
         const { body } = response;
-        console.log(body.article);
         expect(body.article).toHaveProperty("article_id", 1);
         expect(body.article).toEqual(expectedOutput);
       });
@@ -76,12 +74,29 @@ describe("GET /api/articles/:article_id", () => {
         expect(response.body).toEqual({ msg: "article doesn't exist" });
       });
   });
-  test("404: responds with error message if article_id is not valid", () => {
+});
+
+describe("GET /api/users", () => {
+  test("200: responds with array of user objects", () => {
     return request(app)
-      .get("/api/articles/not_valid")
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        expect(body.users.length).toEqual(4);
+        body.users.forEach((user) => {
+          expect(user).toHaveProperty("username");
+          expect(user).toHaveProperty("name");
+          expect(user).toHaveProperty("avatar_url");
+        });
+      });
+  });
+  test("404: responds with error when given bad path", () => {
+    return request(app)
+      .get("/api/user")
       .expect(404)
       .then((response) => {
-        expect(response.body).toEqual({ msg: "article_id not valid" });
+        expect(response.body).toEqual({ msg: "path does not exist!" });
       });
   });
 });
