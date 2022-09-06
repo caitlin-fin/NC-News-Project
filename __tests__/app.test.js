@@ -133,10 +133,31 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(article.votes).toBe(95);
       });
   });
+  test("400: response with bad request message and error when passed invalid vote count", () => {
+    const updateVotes = { inc_votes: "five" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updateVotes)
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "bad request" });
+      });
+  });
+  test("404: responds with error message if article_id is invalid", () => {
+    const updateVotes = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/articles/one")
+      .send(updateVotes)
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "bad request" });
+      });
+  });
 });
-
 
 // errors ->
 // invalid vote count (eg. NaN)
-// empty req.body 
+// empty req.body
 // article doesn't exist
+
+// update error messages --> bad request (400) or not found (404)
