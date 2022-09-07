@@ -1,3 +1,4 @@
 \c nc_news_test
 
-SELECT article_id, title, topic, author, body, created_at, votes, comment_count
+SELECT COUNT(article_id) FROM comments WHERE article_id = 1
+;

@@ -1,0 +1,6 @@
+You are now connected to database "nc_news_test" as user "caitlinfinighan".
+ count 
+-------
+    11
+(1 row)
+
