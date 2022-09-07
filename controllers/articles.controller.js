@@ -23,7 +23,11 @@ exports.patchArticle = (req, res) => {
     res.status(400).send({ msg: "bad request" });
   } else {
     updateArticle(article_id, inc_votes).then((updatedArticle) => {
-      res.status(201).send({ article: updatedArticle });
+      if (updatedArticle === undefined) {
+        res.status(404).send({ msg: "article doesn't exist" });
+      } else {
+        res.status(201).send({ article: updatedArticle });
+      }
     });
   }
 };

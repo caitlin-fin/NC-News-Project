@@ -153,4 +153,23 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(response.body).toEqual({ msg: "bad request" });
       });
   });
+  test("404: responds with error message if article does not exist but article_id is valid", () => {
+    const updateVotes = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/articles/99")
+      .send(updateVotes)
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "article doesn't exist" });
+      });
+  });
+  test("400: responds with error message when inc_vote is missing", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send()
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "bad request" });
+      });
+  });
 });
