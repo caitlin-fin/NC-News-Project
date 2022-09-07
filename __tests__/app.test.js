@@ -143,7 +143,7 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(response.body).toEqual({ msg: "bad request" });
       });
   });
-  test("404: responds with error message if article_id is invalid", () => {
+  test("400: responds with error message if article_id is invalid", () => {
     const updateVotes = { inc_votes: 5 };
     return request(app)
       .patch("/api/articles/one")
@@ -154,10 +154,3 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
-
-// errors ->
-// invalid vote count (eg. NaN)
-// empty req.body
-// article doesn't exist
-
-// update error messages --> bad request (400) or not found (404)
