@@ -108,3 +108,20 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+describe.skip('GET /api/articles/:article_id', () => {
+  test('200: response is article object that includes comment_count property', () => {
+    return request(app)
+    .get('/api/articles/1')
+    .expect(200)
+    .then((response) => {
+      const {body} = response
+      expect(body.article).toHaveProperty('comment_count')
+    })
+  })
+})
+
+//FEATURE REQUEST
+// An article response object should also now include:
+
+// -comment_count which is the total count of all the comments with this article_id - you should make use of queries to the database in order to achieve this.
