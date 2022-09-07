@@ -80,8 +80,8 @@ describe("GET /api/articles/:article_id", () => {
       .expect(404)
       .then((response) => {
         expect(response.body).toEqual({ msg: "article_id not valid" });
-   });
-});
+      });
+  });
 });
 
 describe("GET /api/users", () => {
@@ -105,6 +105,71 @@ describe("GET /api/users", () => {
       .expect(404)
       .then((response) => {
         expect(response.body).toEqual({ msg: "path does not exist!" });
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("201: responds with object containing key with article data", () => {
+    const updateVotes = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updateVotes)
+      .expect(201)
+      .then((response) => {
+        const { article } = response.body;
+        expect(article !== undefined).toBe(true);
+        expect(article.hasOwnProperty("votes")).toBe(true);
+      });
+  });
+  test("201: responds with object and and updates vote count", () => {
+    const updateVotes = { inc_votes: -5 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updateVotes)
+      .expect(201)
+      .then((response) => {
+        const { article } = response.body;
+        expect(article.votes).toBe(95);
+      });
+  });
+  test("400: response with bad request message and error when passed invalid vote count", () => {
+    const updateVotes = { inc_votes: "five" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updateVotes)
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "bad request" });
+      });
+  });
+  test("400: responds with error message if article_id is invalid", () => {
+    const updateVotes = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/articles/one")
+      .send(updateVotes)
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "bad request" });
+      });
+  });
+  test("404: responds with error message if article does not exist but article_id is valid", () => {
+    const updateVotes = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/articles/99")
+      .send(updateVotes)
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "article doesn't exist" });
+      });
+  });
+  test("400: responds with error message when inc_vote is missing", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send()
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "bad request" });
       });
   });
 });
