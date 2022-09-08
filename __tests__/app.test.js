@@ -114,7 +114,7 @@ describe("GET /api/users", () => {
   });
 });
 
-describe("GET /api/articles/:article_id", () => {
+describe("GET /api/articles/:article_id (comment count)", () => {
   test("200: response is article object that includes comment_count property", () => {
     return request(app)
       .get("/api/articles/1")
@@ -124,16 +124,25 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.article).toHaveProperty("comment_count");
       });
   });
-  test.skip('200: response object contains accurate comment count', () => {
+  test('200: response object contains accurate comment count for article with comments', () => {
     return request(app)
     .get("/api/articles/1")
     .expect(200)
     .then((response) => {
       const { body } = response;
-      console.log(body.article)
       expect(body.article.comment_count).toEqual(11);
     });
-  })
+  });
+  test('200: response object contains accurate comment count of 0 for article without comments', () => {
+    return request(app)
+    .get("/api/articles/4")
+    .expect(200)
+    .then((response) => {
+      const { body } = response;
+      expect(body.article.comment_count).toEqual(0);
+    });
+  });
 });
 
-//11
+// errors -->
+// 
