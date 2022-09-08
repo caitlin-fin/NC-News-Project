@@ -114,11 +114,6 @@ describe("GET /api/users", () => {
   });
 });
 
-
-
-// errors -->
-// 
-
 describe("PATCH /api/articles/:article_id", () => {
   test("201: responds with object containing key with article data", () => {
     const updateVotes = { inc_votes: 5 };
@@ -184,7 +179,6 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-
 describe("GET /api/articles/:article_id (comment count)", () => {
   test("200: response is article object that includes comment_count property", () => {
     return request(app)
@@ -195,23 +189,68 @@ describe("GET /api/articles/:article_id (comment count)", () => {
         expect(body.article).toHaveProperty("comment_count");
       });
   });
-  test('200: response object contains accurate comment count for article with comments', () => {
+  test("200: response object contains accurate comment count for article with comments", () => {
     return request(app)
-    .get("/api/articles/1")
-    .expect(200)
-    .then((response) => {
-      const { body } = response;
-      expect(body.article.comment_count).toEqual(11);
-    });
+      .get("/api/articles/1")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        expect(body.article.comment_count).toEqual(11);
+      });
   });
-  test('200: response object contains accurate comment count of 0 for article without comments', () => {
+  test("200: response object contains accurate comment count of 0 for article without comments", () => {
     return request(app)
-    .get("/api/articles/4")
-    .expect(200)
-    .then((response) => {
-      const { body } = response;
-      expect(body.article.comment_count).toEqual(0);
-    });
+      .get("/api/articles/4")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        expect(body.article.comment_count).toEqual(0);
+      });
   });
 });
 
+describe("GET /api/articles", () => {
+  test("200: responds with an array of article objects", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        console.log(body.articles);
+        expect(Array.isArray(body.articles)).toBe(true);
+      });
+  });
+  test("200: response objects in articles array have specific properties", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        expect(body.articles.length).toEqual(12);
+        body.articles.forEach((article) => {
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("comment_count");
+        });
+      });
+  });
+  test("200: responds with array of articles sorted in alphabetical order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        console.log(body.articles);
+        expect(body.articles).toBeSortedBy("created_at");
+      });
+  });
+  test.todo("accepts topic query");
+});
+// an articles array of article objects, each of which should have the following properties:
+
+// The end point should also accept the following query:
+// - topic, which filters the articles by the topic value specified in the query. If the query is omitted the endpoint should respond with all articles.
