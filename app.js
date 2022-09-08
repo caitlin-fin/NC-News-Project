@@ -10,7 +10,10 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticle);
 app.get("/api/users", getUsers);
 
+
+
 app.patch("/api/articles/:article_id", patchArticle)
+
 
 app.all("/api/*", (req, res, next) => {
   res.status(404).send({ msg: "path does not exist!" });

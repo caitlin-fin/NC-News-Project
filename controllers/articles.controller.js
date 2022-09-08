@@ -1,4 +1,8 @@
+
+const { selectArticle, updateArticles } = require("../models/articles.model");
+
 const { selectArticle, updateArticle } = require("../models/articles.model");
+
 
 exports.getArticle = (req, res, next) => {
   const { article_id } = req.params;
