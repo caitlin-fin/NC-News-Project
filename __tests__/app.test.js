@@ -4,6 +4,7 @@ const request = require("supertest");
 
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
+const { get } = require("../app");
 
 beforeEach(() => {
   return seed(testData);
@@ -216,7 +217,6 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then((response) => {
         const { body } = response;
-        console.log(body.articles);
         expect(Array.isArray(body.articles)).toBe(true);
       });
   });
@@ -238,19 +238,43 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("200: responds with array of articles sorted in alphabetical order", () => {
+  test("200: responds with array of articles sorted in alphabetical order (topic filter is omitted)", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then((response) => {
         const { body } = response;
-        console.log(body.articles);
         expect(body.articles).toBeSortedBy("created_at");
       });
   });
-  test.todo("accepts topic query");
+  test("200: response filters articles by accepting a topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        expect(body.articles.length).toEqual(1);
+        body.articles.forEach((article) => {
+          expect(article).toHaveProperty("topic", "cats");
+        });
+      });
+  });
+  test("200: responds with empty array if topic query is valid but no articles exist", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        expect(body.articles.length).toEqual(0);
+      });
+  });
+  test("400: responds with bad request if topic query is invalid", () => {
+    return request(app)
+      .get("/api/articles?topic=5")
+      .expect(400)
+      .then((response) => {
+        console.log(response.body.articles);
+        expect(response.body).toEqual({ msg: "bad request" });
+      });
+  });
 });
-// an articles array of article objects, each of which should have the following properties:
-
-// The end point should also accept the following query:
-// - topic, which filters the articles by the topic value specified in the query. If the query is omitted the endpoint should respond with all articles.

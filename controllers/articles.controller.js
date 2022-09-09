@@ -20,10 +20,13 @@ exports.getArticle = (req, res, next) => {
   }
 };
 
-exports.getArticlesArr = (req, res) => {
-  selectArticles().then((articles) => {
-    res.status(200).send({ articles });
-  });
+exports.getArticlesArr = (req, res, next) => {
+  const { topic } = req.query;
+  selectArticles(topic)
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
+    .catch(next);
 };
 
 exports.patchArticle = (req, res, next) => {
@@ -39,6 +42,3 @@ exports.patchArticle = (req, res, next) => {
       .catch(next);
   }
 };
-
-// if (updatedArticle === undefined) {
-//   res.status(404).send({ msg: "article doesn't exist" });
