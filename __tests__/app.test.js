@@ -4,7 +4,6 @@ const request = require("supertest");
 
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
-const { get } = require("../app");
 
 beforeEach(() => {
   return seed(testData);
@@ -238,13 +237,13 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("200: responds with array of articles sorted in alphabetical order (topic filter is omitted)", () => {
+  test("200: responds with array of articles sorted in order of created_at(topic filter is omitted)", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then((response) => {
         const { body } = response;
-        expect(body.articles).toBeSortedBy("created_at");
+        expect(body.articles).toBeSortedBy("created_at", { descending: true });
       });
   });
   test("200: response filters articles by accepting a topic query", () => {

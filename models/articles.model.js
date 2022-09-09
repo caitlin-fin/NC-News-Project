@@ -23,7 +23,7 @@ exports.selectArticles = (topic) => {
     queryString += " WHERE topic = $1";
   }
   queryString += ` GROUP BY articles.article_id`;
-  queryString += ` ORDER BY created_at ASC`;
+  queryString += ` ORDER BY created_at DESC`;
 
   return db.query(queryString, queryValues).then((data) => {
     return data.rows;
