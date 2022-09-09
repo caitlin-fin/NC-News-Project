@@ -1,8 +1,10 @@
+const topics = require("../db/data/test-data/topics");
 const {
   selectArticle,
   updateArticle,
   selectArticles,
 } = require("../models/articles.model");
+const { checkTopics, checkTopicsExist } = require("../models/topics.model");
 
 exports.getArticle = (req, res, next) => {
   const { article_id } = req.params;
@@ -22,11 +24,31 @@ exports.getArticle = (req, res, next) => {
 
 exports.getArticlesArr = (req, res, next) => {
   const { topic } = req.query;
-  selectArticles(topic)
-    .then((articles) => {
+
+  if (isNaN(topic) === false) {
+    return Promise.reject({ status: 400, msg: "bad request" }).catch(next);
+  }
+
+  if (topic !== undefined) {
+    checkTopicsExist(topic).then((result) => {
+      if (result === true) {
+        selectArticles(topic).then((articles) => {
+          res.status(200).send({ articles });
+        });
+      } else if (result === false) {
+        return Promise.reject({
+          status: 404,
+          msg: "topic doesn't exist",
+        }).catch(next);
+      }
+    });
+  }
+
+  if (topic === undefined) {
+    selectArticles(topic).then((articles) => {
       res.status(200).send({ articles });
-    })
-    .catch(next);
+    });
+  }
 };
 
 exports.patchArticle = (req, res, next) => {

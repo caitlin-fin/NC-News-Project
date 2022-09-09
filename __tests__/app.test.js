@@ -273,8 +273,15 @@ describe("GET /api/articles", () => {
       .get("/api/articles?topic=5")
       .expect(400)
       .then((response) => {
-        console.log(response.body.articles);
         expect(response.body).toEqual({ msg: "bad request" });
+      });
+  });
+  test("404: response with error when topic input is valid but does not exist in the topic database", () => {
+    return request(app)
+      .get("/api/articles?topic=test")
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "topic doesn't exist" });
       });
   });
 });

@@ -18,15 +18,10 @@ exports.selectArticles = (topic) => {
   let queryString = `SELECT articles.*, COUNT(comments.article_id) :: INT AS comment_count FROM articles 
   LEFT JOIN comments ON (articles.article_id=comments.article_id)`;
 
-  if (isNaN(topic) === false) {
-    return Promise.reject({ status: 400, msg: "bad request" });
-  }
-
   if (topic) {
     queryValues.push(topic);
     queryString += " WHERE topic = $1";
   }
-
   queryString += ` GROUP BY articles.article_id`;
   queryString += ` ORDER BY created_at ASC`;
 

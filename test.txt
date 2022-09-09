@@ -1,6 +1,0 @@
-You are now connected to database "nc_news_test" as user "caitlinfinighan".
- article_id |                     title                     | topic |  author  |                          body                          |     created_at      | votes | comment_count 
-------------+-----------------------------------------------+-------+----------+--------------------------------------------------------+---------------------+-------+---------------
-          5 | UNCOVERED: catspiracy to bring down democracy | cats  | rogersop | Bastet walks amongst us, and the cats are taking arms! | 2020-08-03 14:14:00 |     0 |             2
-(1 row)
-
