@@ -114,11 +114,6 @@ describe("GET /api/users", () => {
   });
 });
 
-
-
-// errors -->
-// 
-
 describe("PATCH /api/articles/:article_id", () => {
   test("201: responds with object containing key with article data", () => {
     const updateVotes = { inc_votes: 5 };
@@ -184,7 +179,6 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-
 describe("GET /api/articles/:article_id (comment count)", () => {
   test("200: response is article object that includes comment_count property", () => {
     return request(app)
@@ -195,23 +189,98 @@ describe("GET /api/articles/:article_id (comment count)", () => {
         expect(body.article).toHaveProperty("comment_count");
       });
   });
-  test('200: response object contains accurate comment count for article with comments', () => {
+  test("200: response object contains accurate comment count for article with comments", () => {
     return request(app)
-    .get("/api/articles/1")
-    .expect(200)
-    .then((response) => {
-      const { body } = response;
-      expect(body.article.comment_count).toEqual(11);
-    });
+      .get("/api/articles/1")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        expect(body.article.comment_count).toEqual(11);
+      });
   });
-  test('200: response object contains accurate comment count of 0 for article without comments', () => {
+  test("200: response object contains accurate comment count of 0 for article without comments", () => {
     return request(app)
-    .get("/api/articles/4")
-    .expect(200)
-    .then((response) => {
-      const { body } = response;
-      expect(body.article.comment_count).toEqual(0);
-    });
+      .get("/api/articles/4")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        expect(body.article.comment_count).toEqual(0);
+      });
   });
 });
 
+describe("GET /api/articles", () => {
+  test("200: responds with an array of article objects", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        expect(Array.isArray(body.articles)).toBe(true);
+      });
+  });
+  test("200: response objects in articles array have specific properties", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        expect(body.articles.length).toEqual(12);
+        body.articles.forEach((article) => {
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("comment_count");
+        });
+      });
+  });
+  test("200: responds with array of articles sorted in order of created_at(topic filter is omitted)", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        expect(body.articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("200: response filters articles by accepting a topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        expect(body.articles.length).toEqual(1);
+        body.articles.forEach((article) => {
+          expect(article).toHaveProperty("topic", "cats");
+        });
+      });
+  });
+  test("200: responds with empty array if topic query is valid but no articles exist", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        expect(body.articles.length).toEqual(0);
+      });
+  });
+  test("400: responds with bad request if topic query is invalid", () => {
+    return request(app)
+      .get("/api/articles?topic=5")
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "bad request" });
+      });
+  });
+  test("404: response with error when topic input is valid but does not exist in the topic database", () => {
+    return request(app)
+      .get("/api/articles?topic=test")
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "topic doesn't exist" });
+      });
+  });
+});
