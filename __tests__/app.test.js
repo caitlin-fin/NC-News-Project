@@ -284,3 +284,65 @@ describe("GET /api/articles", () => {
       });
   });
 });
+
+describe.only("GET /api/articles/:article_id/comments", () => {
+  test("200: response with an array of comments for given article_id", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        expect(Array.isArray(body.comments)).toBe(true);
+      });
+  });
+  test("200: comment objects contain specific properties", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        body.comments.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("votes");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("author");
+          expect(comment).toHaveProperty("body");
+        });
+      });
+  });
+  test("200: responds with empty array if article has no comments", () => {
+    return request(app)
+      .get("/api/articles/4/comments")
+      .expect(200)
+      .then((response) => {
+        const { body } = response;
+        expect(body.comments.length).toEqual(0);
+      });
+  });
+  test("400: reponse with error message if article_id is invalid", () => {
+    return request(app)
+    .get('/api/articles/test/comments')
+    .expect(400)
+    .then((response) => {
+      expect(response.body).toEqual({msg: 'bad request'})
+    })
+  });
+  test.skip("404: responds with error message if article_id doesn't exist", () => {
+    return request(app)
+    .get('/api/articles/99/comments')
+    .expect(404)
+    .then((response) => {
+      expect(response.body).toEqual({msg: "article doesn't exist"})
+    })
+  });
+});
+
+// Responds with:
+
+// an array of comments for the given article_id of which each comment should have the following properties:
+
+// comment_id
+// votes
+// created_at
+// author which is the username from the users table
+//
